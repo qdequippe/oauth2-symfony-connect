@@ -20,7 +20,7 @@
         "SymfonyConnect"
     ],
     "require": {
-        "league/oauth2-client": "^2.4",
+        "league/oauth2-client": "^2.0",
         "ext-dom": "*"
     },
     "require-dev": {
