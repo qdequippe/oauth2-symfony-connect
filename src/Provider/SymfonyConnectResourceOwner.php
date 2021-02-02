@@ -19,7 +19,7 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
     public function __construct($response)
     {
         $dom = new \DOMDocument();
-        if (!$dom->loadXML($response)) {
+        if (!$dom->loadXML($response['xml'])) {
             throw new \InvalidArgumentException('Could not transform this xml to a \DOMDocument instance.');
         }
 
@@ -46,7 +46,7 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         $accounts = $this->xpath->query('./foaf:account/foaf:OnlineAccount', $this->data);
         for ($i = 0; $i < $accounts->length; ++$i) {
             $account = $accounts->item($i);
-            if ('SensioLabs Connect' === $this->getNodeValue('./foaf:name', $account)) {
+            if ('SymfonyConnect' === $this->getNodeValue('./foaf:name', $account)) {
                 $username = $this->getNodeValue('foaf:accountName', $account);
 
                 break;
@@ -56,9 +56,14 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         return $username ?: $this->getNodeValue('./foaf:name', $this->data);
     }
 
+    public function getEmail()
+    {
+        return $this->getNodeValue('./foaf:mbox', $this->data);
+    }
+
     public function getProfilePicture()
     {
-        return $this->getNodeValue('./atom:link[@rel="foaf:depiction"]', $this->data, 'link');
+        return $this->getLinkNodeHref('./atom:link[@rel="foaf:depiction"]', $this->data);
     }
 
     public function toArray(): array
@@ -66,6 +71,7 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'email' => $this->getEmail(),
             'profilePicture' => $this->getProfilePicture(),
         ];
     }
@@ -75,6 +81,14 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         $nodeList = $this->xpath->query($query, $element);
         if ($nodeList->length > 0 && $index <= $nodeList->length) {
             return $this->sanitizeValue($nodeList->item($index)->nodeValue);
+        }
+    }
+
+    protected function getLinkNodeHref($query, \DOMElement $element = null, $position = 0)
+    {
+        $nodeList = $this->xpath->query($query, $element);
+        if ($nodeList && $nodeList->length > 0 && $nodeList->item($position)) {
+            return $this->sanitizeValue($nodeList->item($position)->attributes->getNamedItem('href')->value);
         }
     }
 

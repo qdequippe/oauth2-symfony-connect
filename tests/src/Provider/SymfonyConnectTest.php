@@ -75,7 +75,7 @@ class SymfonyConnectTest extends TestCase
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token":"mock_access_token"}');
-        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'application/vnd.com.symfony.connect+xml']);
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getStatusCode')->andReturn(200);
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $userResponse->shouldReceive('getBody')->andReturn($xml);
@@ -91,7 +91,17 @@ class SymfonyConnectTest extends TestCase
         $user = $this->provider->getResourceOwner($token);
 
         $this->assertEquals('39c049bb-9261-4d85-922c-15730d6fa8b1', $user->getId());
-        $this->assertEquals('39c049bb-9261-4d85-922c-15730d6fa8b1', $user->toArray()['id']);
+        $this->assertEquals('john@example.com', $user->getEmail());
+
+        $this->assertEquals(
+            [
+                'id' => '39c049bb-9261-4d85-922c-15730d6fa8b1',
+                'name' => 'John Doe',
+                'email' => 'john@example.com',
+                'profilePicture' => null
+            ],
+            $user->toArray()
+        );
     }
 
     public function testExceptionThrownWhenErrorObjectReceived()

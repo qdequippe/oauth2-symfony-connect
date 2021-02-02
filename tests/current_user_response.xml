@@ -10,19 +10,17 @@
         xmlns:doap="http://usefulinc.com/ns/doap#"
         xmlns:cv="http://kaste.lv/~captsolo/semweb/resume/cv.rdfs">
     <root>
-        <atom:link rel="https://rels.connect.symfony.com/users" href="https://connect.symfony.com/api/users" type="application/vnd.com.symfony.connect+xml"/>
-        <atom:link rel="https://rels.connect.symfony.com/badges" href="https://connect.symfony.com/api/badges" type="application/vnd.com.symfony.connect+xml" />
         <foaf:Person id="39c049bb-9261-4d85-922c-15730d6fa8b1">
             <foaf:name><![CDATA[John Doe]]></foaf:name>
-            <atom:link rel="https://rels.connect.symfony.com/image" href="https://connect.symfony.com/api/images/xxx.png" type="image/png" />
-            <atom:link rel="self" href="https://connect.symfony.com/api/users/xxx" type="application/vnd.com.symfony.connect+xml"/>
+
+            <atom:link rel="https://rels.connect.symfony.com/image" href="https://connect.symfony.com/api/images/39c049bb-9261-4d85-922c-15730d6fa8b1.png" type="image/png" />
+            <atom:link rel="self" href="https://connect.symfony.com/api/users/39c049bb-9261-4d85-922c-15730d6fa8b1" type="application/vnd.com.symfony.connect+xml"/>
+            <atom:link rel="self" href="https://connect.symfony.com/api/alternates/39c049bb-9261-4d85-922c-15730d6fa8b1" type="text/html" />
+
             <bio:olb><![CDATA[My bio]]></bio:olb>
             <foaf:weblog>https://example.com</foaf:weblog>
-            <foaf:homepage>https://example.co</foaf:homepage>
+            <foaf:homepage>https://example.com</foaf:homepage>
             <foaf:mbox>john@example.com</foaf:mbox>
         </foaf:Person>
-        <xhtml:form id="search_users" method="GET" action="https://connect.symfony.com/api/users" enctype="application/x-www-form-urlencoded">
-            <xhtml:input type="text" name="q" required="required" />
-        </xhtml:form>
     </root>
 </api>

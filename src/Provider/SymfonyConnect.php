@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class SymfonyConnect extends AbstractProvider
 {
+
     protected $api = 'https://connect.symfony.com';
 
     public function getBaseAuthorizationUrl()
@@ -26,9 +27,26 @@ class SymfonyConnect extends AbstractProvider
         return $this->api . '/api?access_token='.$token->getToken();
     }
 
+    protected function getScopeSeparator()
+    {
+        return ' ';
+    }
+
     protected function getDefaultScopes()
     {
         return ['SCOPE_PUBLIC'];
+    }
+
+    protected function parseResponse(ResponseInterface $response)
+    {
+        $content = (string)$response->getBody();
+        $type = $this->getContentType($response);
+
+        if ($type !== 'application/vnd.com.symfony.connect+xml') {
+            return parent::parseResponse($response);
+        }
+
+        return ['xml' => $content];
     }
 
     protected function checkResponse(ResponseInterface $response, $data)
@@ -37,28 +55,13 @@ class SymfonyConnect extends AbstractProvider
             throw new IdentityProviderException(
                 $data['message'] ?? $response->getReasonPhrase(),
                 $response->getStatusCode(),
-                (string) $response->getBody()
+                $data
             );
         }
     }
 
-    public function getResourceOwner(AccessToken $token)
-    {
-        $response = $this->fetchResourceOwnerDetails($token);
-
-        return new SymfonyConnectResourceOwner($response);
-    }
-
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-    }
-
-    protected function fetchResourceOwnerDetails(AccessToken $token)
-    {
-        $url = $this->getResourceOwnerDetailsUrl($token);
-
-        $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
-
-        return $this->getParsedResponse($request);
+        return new SymfonyConnectResourceOwner($response);
     }
 }
