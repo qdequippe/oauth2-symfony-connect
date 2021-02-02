@@ -1,6 +1,6 @@
 <?php
 
-namespace Qdequippe\OAuth2\Client\tests\src\Provider;
+namespace Qdequippe\OAuth2\Client\Test\Provider;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Tool\QueryBuilderTrait;
