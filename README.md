@@ -75,7 +75,7 @@ When creating your SymfonyConnect authorization URL, you can specify the state a
 ```php
 $options = [
     'state' => 'OPTIONAL_CUSTOM_CONFIGURED_STATE',
-    'scope' => ['SCOPE_PUBLIC SCOPE_EMAIL'] // string
+    'scope' => ['SCOPE_PUBLIC', 'SCOPE_EMAIL'] // array or string ['SCOPE_PUBLIC SCOPE_EMAIL']
 ];
 
 $authorizationUrl = $provider->getAuthorizationUrl($options);

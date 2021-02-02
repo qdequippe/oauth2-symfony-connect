@@ -39,14 +39,13 @@ class SymfonyConnect extends AbstractProvider
 
     protected function parseResponse(ResponseInterface $response)
     {
-        $content = (string)$response->getBody();
         $type = $this->getContentType($response);
 
         if ($type !== 'application/vnd.com.symfony.connect+xml') {
             return parent::parseResponse($response);
         }
 
-        return ['xml' => $content];
+        return ['xml' => (string)$response->getBody()];
     }
 
     protected function checkResponse(ResponseInterface $response, $data)
