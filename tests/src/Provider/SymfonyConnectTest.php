@@ -7,6 +7,7 @@ use League\OAuth2\Client\Tool\QueryBuilderTrait;
 use Qdequippe\OAuth2\Client\Provider\SymfonyConnect;
 use PHPUnit\Framework\TestCase;
 use Mockery as m;
+use Qdequippe\OAuth2\Client\Provider\SymfonyConnectResourceOwner;
 
 class SymfonyConnectTest extends TestCase
 {
@@ -90,6 +91,7 @@ class SymfonyConnectTest extends TestCase
 
         $user = $this->provider->getResourceOwner($token);
 
+        $this->assertInstanceOf(SymfonyConnectResourceOwner::class, $user);
         $this->assertEquals('39c049bb-9261-4d85-922c-15730d6fa8b1', $user->getId());
         $this->assertEquals('john@example.com', $user->getEmail());
 
@@ -102,6 +104,7 @@ class SymfonyConnectTest extends TestCase
             ],
             $user->toArray()
         );
+        $this->assertInstanceOf(\DOMElement::class, $user->getData());
     }
 
     public function testExceptionThrownWhenErrorObjectReceived()

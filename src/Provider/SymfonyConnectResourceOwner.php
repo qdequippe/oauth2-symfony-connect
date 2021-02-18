@@ -66,6 +66,11 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         return $this->getLinkNodeHref('./atom:link[@rel="foaf:depiction"]', $this->data);
     }
 
+    public function getData()
+    {
+        return $this->data;
+    }
+
     public function toArray(): array
     {
         return [
@@ -76,7 +81,7 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         ];
     }
 
-    protected function getNodeValue($query, \DOMElement $element = null, $index = 0)
+    protected function getNodeValue($query, \DOMNode $element = null, $index = 0)
     {
         $nodeList = $this->xpath->query($query, $element);
         if ($nodeList->length > 0 && $index <= $nodeList->length) {
@@ -84,7 +89,7 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         }
     }
 
-    protected function getLinkNodeHref($query, \DOMElement $element = null, $position = 0)
+    protected function getLinkNodeHref($query, \DOMNode $element = null, $position = 0)
     {
         $nodeList = $this->xpath->query($query, $element);
         if ($nodeList && $nodeList->length > 0 && $nodeList->item($position)) {
