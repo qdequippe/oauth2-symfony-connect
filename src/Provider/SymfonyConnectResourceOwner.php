@@ -40,20 +40,22 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         return $this->data->attributes->getNamedItem('id')->value;
     }
 
-    public function getName()
+    public function getUsername()
     {
-        $username = null;
         $accounts = $this->xpath->query('./foaf:account/foaf:OnlineAccount', $this->data);
         for ($i = 0; $i < $accounts->length; ++$i) {
             $account = $accounts->item($i);
             if ('SymfonyConnect' === $this->getNodeValue('./foaf:name', $account)) {
-                $username = $this->getNodeValue('foaf:accountName', $account);
-
-                break;
+                return $this->getNodeValue('foaf:accountName', $account);
             }
         }
 
-        return $username ?: $this->getNodeValue('./foaf:name', $this->data);
+        return null;
+    }
+
+    public function getName()
+    {
+        return $this->getUsername() ?: $this->getNodeValue('./foaf:name', $this->data);
     }
 
     public function getEmail()
@@ -75,9 +77,20 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
     {
         return [
             'id' => $this->getId(),
+            'username' => $this->getUsername(),
             'name' => $this->getName(),
             'email' => $this->getEmail(),
             'profilePicture' => $this->getProfilePicture(),
+            'realname' => $this->getNodeValue('./foaf:name', $this->data),
+            'biography' => $this->getNodeValue('./bio:olb', $this->data),
+            'birthday' => $this->getNodeValue('./foaf:birthday', $this->data),
+            'city' => $this->getNodeValue('./vcard:locality', $this->data),
+            'country' => $this->getNodeValue('./vcard:country-name', $this->data),
+            'company' => $this->getNodeValue('./cv:hasWorkHistory/cv:employedIn', $this->data),
+            'jobPosition' => $this->getNodeValue('./cv:hasWorkHistory/cv:jobTitle', $this->data),
+            'blogUrl' => $this->getNodeValue('./foaf:weblog', $this->data),
+            'url' => $this->getNodeValue('./foaf:homepage', $this->data),
+            'feedUrl' => $this->getNodeValue('./atom:link[@title="blog/feed"]', $this->data),
         ];
     }
 
