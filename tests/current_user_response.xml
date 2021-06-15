@@ -21,6 +21,17 @@
             <foaf:weblog>https://example.com</foaf:weblog>
             <foaf:homepage>https://example.com</foaf:homepage>
             <foaf:mbox>john@example.com</foaf:mbox>
+            <foaf:account>
+                <foaf:OnlineAccount>
+                    <foaf:name>SymfonyConnect</foaf:name>
+                    <foaf:accountName><![CDATA[jdoe]]></foaf:accountName>
+                    <since>Wed, 29 Oct 2008 12:04:33 +0100</since>
+                </foaf:OnlineAccount>
+                <foaf:OnlineAccount>
+                    <foaf:name>github</foaf:name>
+                    <foaf:accountName><![CDATA[jdoe-github]]></foaf:accountName>
+                </foaf:OnlineAccount>
+            </foaf:account>
         </foaf:Person>
     </root>
 </api>

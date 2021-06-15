@@ -94,13 +94,26 @@ class SymfonyConnectTest extends TestCase
         $this->assertInstanceOf(SymfonyConnectResourceOwner::class, $user);
         $this->assertEquals('39c049bb-9261-4d85-922c-15730d6fa8b1', $user->getId());
         $this->assertEquals('john@example.com', $user->getEmail());
+        $this->assertEquals('jdoe', $user->getUsername());
+        $this->assertEquals('jdoe', $user->getName());
 
         $this->assertEquals(
             [
                 'id' => '39c049bb-9261-4d85-922c-15730d6fa8b1',
-                'name' => 'John Doe',
+                'name' => 'jdoe',
                 'email' => 'john@example.com',
-                'profilePicture' => null
+                'profilePicture' => null,
+                'username' => 'jdoe',
+                'realname' => 'John Doe',
+                'biography' => 'My bio',
+                'birthday' => null,
+                'city' => null,
+                'country' => null,
+                'company' => null,
+                'jobPosition' => null,
+                'blogUrl' => 'https://example.com',
+                'url' => 'https://example.com',
+                'feedUrl' => null,
             ],
             $user->toArray()
         );
