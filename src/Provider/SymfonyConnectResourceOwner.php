@@ -35,6 +35,9 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         $this->data = $user->item(0);
     }
 
+    /**
+     * @return mixed
+     **/
     public function getId()
     {
         return $this->data->attributes->getNamedItem('id')->value;
