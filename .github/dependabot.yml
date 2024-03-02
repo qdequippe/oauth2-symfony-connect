@@ -1,0 +1,20 @@
+version: 2
+
+updates:
+    # Maintain dependencies for GitHub Actions
+    #- package-ecosystem: "github-actions"
+    #  directory: "/"
+    #  schedule:
+    #      interval: "monthly"
+
+    # Maintain dependencies for Composer
+    - package-ecosystem: "composer"
+      directory: "/"
+      schedule:
+          interval: "monthly"
+
+    # Maintain dependencies for php-cs-fixer tool
+    #- package-ecosystem: "composer"
+    #  directory: "/tools/php-cs-fixer"
+    #  schedule:
+    #      interval: "monthly"
