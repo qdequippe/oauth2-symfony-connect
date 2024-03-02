@@ -1,0 +1,14 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "ghcr.io/shyim/devcontainers-features/php:0": {
+        "version": "7.4"
+      },
+      "ghcr.io/devcontainers/features/sshd:1": {
+        "version": "latest"
+      }
+    },
+    "updateContentCommand": {
+      "composer update": ["composer", "update"]
+    }
+  }
