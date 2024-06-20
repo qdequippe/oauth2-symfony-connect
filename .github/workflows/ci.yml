@@ -1,0 +1,51 @@
+name: CI
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: 'Setup PHP'
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+
+            - uses: "ramsey/composer-install@v3"
+              with:
+                  composer-options: "--prefer-dist"
+
+            - name: Code Sniffer
+              run: vendor/bin/phpcs --standard=psr2 src/
+
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version:
+                    - "7.4"
+                    - "8.0"
+                    - "8.1"
+                    - "8.2"
+                    - "8.3"
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: 'Setup PHP'
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "${{ matrix.php-version }}"
+
+            - uses: "ramsey/composer-install@v3"
+              with:
+                  composer-options: "--prefer-dist"
+
+            - name: Run tests
+              run: vendor/bin/phpunit

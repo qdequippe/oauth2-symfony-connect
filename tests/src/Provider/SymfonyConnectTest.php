@@ -60,7 +60,9 @@ class SymfonyConnectTest extends TestCase
         ];
 
         $response = m::mock('Psr\Http\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn(\json_encode($testResponse));
+        $stream = m::mock('Psr\Http\Message\StreamInterface');
+        $stream->shouldReceive('__toString')->andReturn(json_encode($testResponse));
+        $response->shouldReceive('getBody')->andReturn($stream);
         $response->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $response->shouldReceive('getStatusCode')->andReturn(200);
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -75,11 +77,16 @@ class SymfonyConnectTest extends TestCase
         $xml = file_get_contents(dirname(__FILE__, 3) .'/current_user_response.xml');
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"access_token":"mock_access_token"}');
+        $streamPost = m::mock('Psr\Http\Message\StreamInterface');
+        $streamPost->shouldReceive('__toString')->andReturn('{"access_token":"mock_access_token"}');
+        $postResponse->shouldReceive('getBody')->andReturn($streamPost);
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getStatusCode')->andReturn(200);
+
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn($xml);
+        $streamUser = m::mock('Psr\Http\Message\StreamInterface');
+        $streamUser->shouldReceive('__toString')->andReturn($xml);
+        $userResponse->shouldReceive('getBody')->andReturn($streamUser);
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'application/vnd.com.symfony.connect+xml']);
         $userResponse->shouldReceive('getStatusCode')->andReturn(200);
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -127,7 +134,9 @@ class SymfonyConnectTest extends TestCase
         $status = rand(400, 600);
         $code = uniqid();
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"message": "'.$message.'", "error": "'.$code.'"}');
+        $streamPost = m::mock('Psr\Http\Message\StreamInterface');
+        $streamPost->shouldReceive('__toString')->andReturn('{"message": "'.$message.'", "error": "'.$code.'"}');
+        $postResponse->shouldReceive('getBody')->andReturn($streamPost);
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getStatusCode')->andReturn($status);
         $client = m::mock('GuzzleHttp\ClientInterface');

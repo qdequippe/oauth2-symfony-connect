@@ -4,22 +4,22 @@
          bootstrap="vendor/autoload.php"
          colors="true"
          verbose="true">
-  <coverage>
-    <include>
-      <directory suffix=".php">src/</directory>
-    </include>
-    <report>
-      <clover outputFile="build/logs/clover.xml"/>
-      <html outputDirectory="build/coverage"/>
-      <text outputFile="build/coverage.txt"/>
-    </report>
-  </coverage>
-  <testsuites>
-    <testsuite name="SymfonyConnect OAuth2 Test Suite">
-      <directory>tests</directory>
-    </testsuite>
-  </testsuites>
-  <logging>
-    <junit outputFile="build/report.junit.xml"/>
-  </logging>
+    <coverage>
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+        <report>
+            <clover outputFile="build/logs/clover.xml"/>
+            <html outputDirectory="build/coverage"/>
+            <text outputFile="build/coverage.txt"/>
+        </report>
+    </coverage>
+    <testsuites>
+        <testsuite name="SymfonyConnect OAuth2 Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <junit outputFile="build/report.junit.xml"/>
+    </logging>
 </phpunit>
