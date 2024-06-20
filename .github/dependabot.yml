@@ -12,9 +12,3 @@ updates:
       directory: "/"
       schedule:
           interval: "monthly"
-
-    # Maintain dependencies for php-cs-fixer tool
-    #- package-ecosystem: "composer"
-    #  directory: "/tools/php-cs-fixer"
-    #  schedule:
-    #      interval: "monthly"
