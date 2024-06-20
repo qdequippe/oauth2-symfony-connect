@@ -4,16 +4,19 @@ namespace Qdequippe\OAuth2\Client\Test\Provider;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Tool\QueryBuilderTrait;
-use Qdequippe\OAuth2\Client\Provider\SymfonyConnect;
-use PHPUnit\Framework\TestCase;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
+use Qdequippe\OAuth2\Client\Provider\SymfonyConnect;
 use Qdequippe\OAuth2\Client\Provider\SymfonyConnectResourceOwner;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\ClientInterface;
 
 class SymfonyConnectTest extends TestCase
 {
     use QueryBuilderTrait;
 
-    protected $provider;
+    protected SymfonyConnect $provider;
 
     public function setUp(): void
     {
@@ -24,7 +27,7 @@ class SymfonyConnectTest extends TestCase
         ]);
     }
 
-    public function testAuthorizationUrl()
+    public function testAuthorizationUrl(): void
     {
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
@@ -38,14 +41,14 @@ class SymfonyConnectTest extends TestCase
         $this->assertNotNull($this->provider->getState());
     }
 
-    public function testGetAuthorizationUrl()
+    public function testGetAuthorizationUrl(): void
     {
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
         $this->assertEquals('/oauth/authorize', $uri['path']);
     }
 
-    public function testGetBaseAccessTokenUrl()
+    public function testGetBaseAccessTokenUrl(): void
     {
         $params = [];
         $url = $this->provider->getBaseAccessTokenUrl($params);
@@ -53,46 +56,46 @@ class SymfonyConnectTest extends TestCase
         $this->assertEquals('/oauth/access_token', $uri['path']);
     }
 
-    public function testGetAccessToken()
+    public function testGetAccessToken(): void
     {
         $testResponse = [
             'access_token' => 'mock_access_token',
         ];
 
-        $response = m::mock('Psr\Http\Message\ResponseInterface');
-        $stream = m::mock('Psr\Http\Message\StreamInterface');
-        $stream->shouldReceive('__toString')->andReturn(json_encode($testResponse));
-        $response->shouldReceive('getBody')->andReturn($stream);
-        $response->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
-        $response->shouldReceive('getStatusCode')->andReturn(200);
-        $client = m::mock('GuzzleHttp\ClientInterface');
-        $client->shouldReceive('send')->times(1)->andReturn($response);
+        $response = m::mock(ResponseInterface::class);
+        $stream = m::mock(StreamInterface::class);
+        $stream->allows('__toString')->andReturns(json_encode($testResponse, JSON_THROW_ON_ERROR));
+        $response->allows('getBody')->andReturns($stream);
+        $response->allows('getHeader')->andReturns(['content-type' => 'json']);
+        $response->allows('getStatusCode')->andReturns(200);
+        $client = m::mock(ClientInterface::class);
+        $client->expects('send')->times(1)->andReturns($response);
         $this->provider->setHttpClient($client);
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         $this->assertEquals($testResponse['access_token'], $token->getToken());
     }
 
-    public function testUserData()
+    public function testUserData(): void
     {
-        $xml = file_get_contents(dirname(__FILE__, 3) .'/current_user_response.xml');
+        $xml = file_get_contents(__DIR__.'/current_user_response.xml');
 
-        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $streamPost = m::mock('Psr\Http\Message\StreamInterface');
-        $streamPost->shouldReceive('__toString')->andReturn('{"access_token":"mock_access_token"}');
-        $postResponse->shouldReceive('getBody')->andReturn($streamPost);
-        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
-        $postResponse->shouldReceive('getStatusCode')->andReturn(200);
+        $postResponse = m::mock(ResponseInterface::class);
+        $streamPost = m::mock(StreamInterface::class);
+        $streamPost->allows('__toString')->andReturns('{"access_token":"mock_access_token"}');
+        $postResponse->allows('getBody')->andReturns($streamPost);
+        $postResponse->allows('getHeader')->andReturns(['content-type' => 'json']);
+        $postResponse->allows('getStatusCode')->andReturns(200);
 
-        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $streamUser = m::mock('Psr\Http\Message\StreamInterface');
-        $streamUser->shouldReceive('__toString')->andReturn($xml);
-        $userResponse->shouldReceive('getBody')->andReturn($streamUser);
-        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'application/vnd.com.symfony.connect+xml']);
-        $userResponse->shouldReceive('getStatusCode')->andReturn(200);
-        $client = m::mock('GuzzleHttp\ClientInterface');
-        $client->shouldReceive('send')
+        $userResponse = m::mock(ResponseInterface::class);
+        $streamUser = m::mock(StreamInterface::class);
+        $streamUser->allows('__toString')->andReturns($xml);
+        $userResponse->allows('getBody')->andReturns($streamUser);
+        $userResponse->allows('getHeader')->andReturns(['content-type' => 'application/vnd.com.symfony.connect+xml']);
+        $userResponse->allows('getStatusCode')->andReturns(200);
+        $client = m::mock(ClientInterface::class);
+        $client->expects('send')
             ->times(2)
-            ->andReturn($postResponse, $userResponse);
+            ->andReturns($postResponse, $userResponse);
         $this->provider->setHttpClient($client);
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
 
@@ -127,22 +130,23 @@ class SymfonyConnectTest extends TestCase
         $this->assertInstanceOf(\DOMElement::class, $user->getData());
     }
 
-    public function testExceptionThrownWhenErrorObjectReceived()
+    public function testExceptionThrownWhenErrorObjectReceived(): void
     {
         $this->expectException(IdentityProviderException::class);
-        $message = uniqid();
-        $status = rand(400, 600);
-        $code = uniqid();
-        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $streamPost = m::mock('Psr\Http\Message\StreamInterface');
-        $streamPost->shouldReceive('__toString')->andReturn('{"message": "'.$message.'", "error": "'.$code.'"}');
-        $postResponse->shouldReceive('getBody')->andReturn($streamPost);
-        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
-        $postResponse->shouldReceive('getStatusCode')->andReturn($status);
-        $client = m::mock('GuzzleHttp\ClientInterface');
-        $client->shouldReceive('send')
+        $message = uniqid('', true);
+        $status = random_int(400, 600);
+        $code = uniqid('', true);
+
+        $postResponse = m::mock(ResponseInterface::class);
+        $streamPost = m::mock(StreamInterface::class);
+        $streamPost->allows('__toString')->andReturns('{"message": "'.$message.'", "error": "'.$code.'"}');
+        $postResponse->allows('getBody')->andReturns($streamPost);
+        $postResponse->allows('getHeader')->andReturns(['content-type' => 'json']);
+        $postResponse->allows('getStatusCode')->andReturns($status);
+        $client = m::mock(ClientInterface::class);
+        $client->expects('send')
             ->times(1)
-            ->andReturn($postResponse);
+            ->andReturns($postResponse);
         $this->provider->setHttpClient($client);
         $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
     }

@@ -2,7 +2,7 @@ name: CI
 
 on:
     push:
-        branches: [ master ]
+        branches: [ main ]
     pull_request:
 
 jobs:
@@ -14,14 +14,14 @@ jobs:
             - name: 'Setup PHP'
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: '7.4'
+                  php-version: '8.1'
 
             - uses: "ramsey/composer-install@v3"
               with:
                   composer-options: "--prefer-dist"
 
-            - name: Code Sniffer
-              run: vendor/bin/phpcs --standard=psr2 src/
+            - name: PHP CS Fixer
+              run: ./vendor/bin/php-cs-fixer check src
 
     test:
         runs-on: ubuntu-latest
@@ -29,8 +29,6 @@ jobs:
             fail-fast: false
             matrix:
                 php-version:
-                    - "7.4"
-                    - "8.0"
                     - "8.1"
                     - "8.2"
                     - "8.3"
