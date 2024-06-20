@@ -4,8 +4,6 @@ This package provides [SymfonyConnect](https://connect.symfony.com) OAuth 2.0 su
 
 Inspired by https://github.com/symfonycorp/connect and https://github.com/hwi/HWIOAuthBundle.
 
-[![Build Status](https://travis-ci.org/qdequippe/oauth2-symfony-connect.svg)](http://travis-ci.org/qdequippe/oauth2-symfony-connect)
-
 ## Installation
 
 To install, use composer:
