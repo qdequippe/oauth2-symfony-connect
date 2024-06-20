@@ -4,65 +4,39 @@ namespace Qdequippe\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
 
 class SymfonyConnect extends AbstractProvider
 {
+    protected string $api = 'https://connect.symfony.com';
 
-    protected $api = 'https://connect.symfony.com';
-
-    /**
-     * @return string
-     */
-    #[\ReturnTypeWillChange]
-    public function getBaseAuthorizationUrl()
+    public function getBaseAuthorizationUrl(): string
     {
         return $this->api . '/oauth/authorize';
     }
 
-    /**
-     * @return string
-     */
-    #[\ReturnTypeWillChange]
-    public function getBaseAccessTokenUrl(array $params)
+    public function getBaseAccessTokenUrl(array $params): string
     {
         return $this->api . '/oauth/access_token';
     }
 
-    /**
-     * @return string
-     */
-    #[\ReturnTypeWillChange]
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token): string
     {
         return $this->api . '/api?access_token='.$token->getToken();
     }
 
-    /**
-     * @return string
-     */
-    #[\ReturnTypeWillChange]
-    protected function getScopeSeparator()
+    protected function getScopeSeparator(): string
     {
         return ' ';
     }
 
-    /**
-     * @return array
-     */
-    #[\ReturnTypeWillChange]
-    protected function getDefaultScopes()
+    protected function getDefaultScopes(): array
     {
         return ['SCOPE_PUBLIC'];
     }
 
-    /**
-     * @return array
-     */
-    #[\ReturnTypeWillChange]
-    protected function parseResponse(ResponseInterface $response)
+    protected function parseResponse(ResponseInterface $response): array
     {
         $type = $this->getContentType($response);
 
@@ -73,11 +47,7 @@ class SymfonyConnect extends AbstractProvider
         return ['xml' => (string)$response->getBody()];
     }
 
-    /**
-     * @return void
-     */
-    #[\ReturnTypeWillChange]
-    protected function checkResponse(ResponseInterface $response, $data)
+    protected function checkResponse(ResponseInterface $response, $data): void
     {
         if ($response->getStatusCode() >= 400) {
             throw new IdentityProviderException(
@@ -88,11 +58,7 @@ class SymfonyConnect extends AbstractProvider
         }
     }
 
-    /**
-     * @return ResourceOwnerInterface
-     */
-    #[\ReturnTypeWillChange]
-    protected function createResourceOwner(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token): SymfonyConnectResourceOwner
     {
         return new SymfonyConnectResourceOwner($response);
     }

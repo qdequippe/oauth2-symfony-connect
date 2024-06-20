@@ -6,15 +6,8 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class SymfonyConnectResourceOwner implements ResourceOwnerInterface
 {
-    /**
-     * @var \DOMElement
-     */
-    private $data;
-
-    /**
-     * @var \DOMXpath
-     */
-    private $xpath;
+    private \DOMElement|null|\DOMNode $data;
+    private \DOMXpath $xpath;
 
     public function __construct($response)
     {
@@ -35,15 +28,12 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         $this->data = $user->item(0);
     }
 
-    /**
-     * @return mixed
-     **/
-    public function getId()
+    public function getId(): ?string
     {
         return $this->data->attributes->getNamedItem('id')->value;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         $accounts = $this->xpath->query('./foaf:account/foaf:OnlineAccount', $this->data);
         for ($i = 0; $i < $accounts->length; ++$i) {
@@ -56,22 +46,22 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         return null;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->getUsername() ?: $this->getNodeValue('./foaf:name', $this->data);
     }
 
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->getNodeValue('./foaf:mbox', $this->data);
     }
 
-    public function getProfilePicture()
+    public function getProfilePicture(): ?string
     {
         return $this->getLinkNodeHref('./atom:link[@rel="foaf:depiction"]', $this->data);
     }
 
-    public function getData()
+    public function getData(): \DOMNode|\DOMElement|null
     {
         return $this->data;
     }
@@ -97,23 +87,29 @@ class SymfonyConnectResourceOwner implements ResourceOwnerInterface
         ];
     }
 
-    protected function getNodeValue($query, \DOMNode $element = null, $index = 0)
+    protected function getNodeValue($query, \DOMNode $element = null, $index = 0): mixed
     {
         $nodeList = $this->xpath->query($query, $element);
+
         if ($nodeList->length > 0 && $index <= $nodeList->length) {
             return $this->sanitizeValue($nodeList->item($index)->nodeValue);
         }
+
+        return null;
     }
 
-    protected function getLinkNodeHref($query, \DOMNode $element = null, $position = 0)
+    protected function getLinkNodeHref($query, \DOMNode $element = null, $position = 0): mixed
     {
         $nodeList = $this->xpath->query($query, $element);
+
         if ($nodeList && $nodeList->length > 0 && $nodeList->item($position)) {
             return $this->sanitizeValue($nodeList->item($position)->attributes->getNamedItem('href')->value);
         }
+
+        return null;
     }
 
-    protected function sanitizeValue($value)
+    protected function sanitizeValue(mixed $value): mixed
     {
         if ('true' === $value) {
             return true;
